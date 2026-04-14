@@ -7,22 +7,26 @@
   padding: 13px 18px;
   margin-bottom: 15px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.10);
-  max-width: 370px;
+  max-width: 420px;
 }
 .student-photo {
   width: 90px;
   height: 90px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 15px;
+  margin-right: 18px;
   border: 2px solid #555;
 }
+.student-info {
+  display: flex;
+  flex-direction: column;
+}
 .student-name {
-  margin: 0 0 3px 0;
+  margin: 0 0 4px 0;
   font-size: 18px;
 }
 .student-title {
-  margin: 0 0 3px 0;
+  margin: 0 0 4px 0;
   font-size: 14px;
   color: #b0b0b0;
 }
