@@ -1,60 +1,46 @@
-# SEGA 타이틀 문구 스타일
-#sega-title {
-  margin-left: 32px;
-  font-size: 22px;
-  font-weight: 600;
-  color: #ffd700;
-  white-space: nowrap;
-  align-self: flex-start;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  letter-spacing: 0.5px;
-  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+/* 간단한 스타일 */
+html,body{height:100%;}
+body{
+  margin:0;
+  padding:16px;
+  font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background:#0b0b0d;
+  color:#fff;
 }
-# 박사과정/학생 카드 스타일
-.student-card {
-  background: none;
-  box-shadow: none;
-  padding: 0;
-  margin-bottom: 15px;
-}
-.student-row {
-  display: flex;
-  gap: 24px;
-}
-.student-profile {
+#canvas-container{margin-top:12px;}
+h1{font-size:18px;margin:0 0 8px 0}
+
+/* 대표 교수 카드 스타일 */
+#professor-card {
   display: flex;
   align-items: center;
-  background: #20202a;
-  border-radius: 10px;
-  padding: 13px 18px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.10);
-  max-width: 370px;
-  min-width: 270px;
+  background: #18181c;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  max-width: 420px;
 }
-.student-photo {
-  width: 90px;
-  height: 90px;
+#professor-photo {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 18px;
-  border: 2px solid #555;
+  border: 2px solid #444;
 }
-.student-info {
-  display: flex;
-  flex-direction: column;
-}
-.student-name {
+#professor-card h2 {
   margin: 0 0 4px 0;
-  font-size: 18px;
+  font-size: 22px;
 }
-.student-title {
+#professor-title {
   margin: 0 0 4px 0;
-  font-size: 14px;
+  font-size: 15px;
   color: #b0b0b0;
 }
-.student-email {
+#professor-email {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   color: #a0a0a0;
 }
 /* 간단한 스타일 */
