@@ -1,3 +1,15 @@
+# SEGA 타이틀 문구 스타일
+#sega-title {
+  margin-left: 32px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffd700;
+  white-space: nowrap;
+  align-self: flex-start;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
 # 박사과정/학생 카드 스타일
 .student-card {
   background: none;
@@ -66,7 +78,8 @@ h1{font-size:18px;margin:0 0 8px 0}
   padding: 16px 20px;
   margin-bottom: 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  max-width: 420px;
+  max-width: none;
+}
 }
 #professor-photo {
   width: 100px;
