@@ -90,23 +90,28 @@ const intro = document.getElementById('professor-intro');
 const btnIntro = document.getElementById('btn-intro');
 const btnLink = document.getElementById('btn-link');
 let introVisible = false;
+let hideTimeout = null;
 
-profCard.addEventListener('mouseenter', () => {
+function showBtns() {
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+    hideTimeout = null;
+  }
   btns.style.display = 'flex';
-});
-profCard.addEventListener('mouseleave', () => {
-  btns.style.display = 'none';
-  intro.style.display = 'none';
-  introVisible = false;
-});
-btns.addEventListener('mouseenter', () => {
-  btns.style.display = 'flex';
-});
-btns.addEventListener('mouseleave', () => {
-  btns.style.display = 'none';
-  intro.style.display = 'none';
-  introVisible = false;
-});
+}
+function hideBtnsDelayed() {
+  if (hideTimeout) clearTimeout(hideTimeout);
+  hideTimeout = setTimeout(() => {
+    btns.style.display = 'none';
+    intro.style.display = 'none';
+    introVisible = false;
+  }, 2000);
+}
+
+profCard.addEventListener('mouseenter', showBtns);
+profCard.addEventListener('mouseleave', hideBtnsDelayed);
+btns.addEventListener('mouseenter', showBtns);
+btns.addEventListener('mouseleave', hideBtnsDelayed);
 btnIntro.addEventListener('click', () => {
   introVisible = !introVisible;
   intro.style.display = introVisible ? 'block' : 'none';
