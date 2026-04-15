@@ -10,20 +10,25 @@
 </head>
 <body>
   <!-- 대표 교수 창 -->
-  <a href="https://scholar.google.com/citations?hl=ko&user=Abd4YukAAAAJ&view_op=list_works&gmla=AEk_c1txzNqTE-xjIOKhZZs4U83PxBNIPcJRlo3MZFsUt2PzEJKSCuUa2qw4JNBivwXpoV6u7ftErEagy2jw6H9Ui42T6Rbq2XRECWkP1t4tDRZwMj-enJUPyg" target="_blank" style="text-decoration:none;color:inherit;">
-    <section id="professor-card">
-      <img src="yklim.jpg" alt="임양규 교수 사진" id="professor-photo">
-      <div>
-        <h2 id="professor-name">임양규 교수</h2>
-        <p id="professor-title">연구실 대표 교수</p>
-        <p id="professor-email">Email: trumpetyk09@duksung.ac.kr</p>
-      </div>
-      <div id="sega-lab-logo">
-        <div class="sega-logo-circle">SEGA</div>
-        <div class="sega-lab-title">Sound Exploration & Generative Arts</div>
-      </div>
-    </section>
-  </a>
+  <section id="professor-card" tabindex="0" style="cursor:pointer;">
+    <img src="yklim.jpg" alt="임양규 교수 사진" id="professor-photo">
+    <div>
+      <h2 id="professor-name">임양규 교수</h2>
+      <p id="professor-title">연구실 대표 교수</p>
+      <p id="professor-email">Email: trumpetyk09@duksung.ac.kr</p>
+    </div>
+    <div id="sega-lab-logo">
+      <div class="sega-logo-circle">SEGA</div>
+      <div class="sega-lab-title">Sound Exploration & Generative Arts</div>
+    </div>
+  </section>
+  <div id="professor-buttons" style="display:none; margin-bottom:12px;">
+    <button id="btn-intro" type="button">자기소개 보기</button>
+    <button id="btn-link" type="button">Google Scholar</button>
+  </div>
+  <div id="professor-intro" style="display:none; background:#23232b; color:#fff; padding:18px; border-radius:10px; max-width:420px; margin-bottom:18px;">
+    <!-- 자기소개 내용은 여기에 표시됩니다. -->
+  </div>
   <!-- 학생 카드 -->
   <section class="student-card">
     <div class="student-row">
@@ -77,3 +82,28 @@
   </main>
 </body>
 </html>
+<script>
+// 임양규 카드 클릭 시 버튼 표시
+const profCard = document.getElementById('professor-card');
+const btns = document.getElementById('professor-buttons');
+const intro = document.getElementById('professor-intro');
+const btnIntro = document.getElementById('btn-intro');
+const btnLink = document.getElementById('btn-link');
+let introVisible = false;
+
+profCard.addEventListener('click', () => {
+  btns.style.display = btns.style.display === 'none' ? 'flex' : 'none';
+  intro.style.display = 'none';
+  introVisible = false;
+});
+btnIntro.addEventListener('click', () => {
+  introVisible = !introVisible;
+  intro.style.display = introVisible ? 'block' : 'none';
+  if (introVisible) {
+    intro.innerHTML = '<b>자기소개</b><br>아직 내용이 없습니다.';
+  }
+});
+btnLink.addEventListener('click', () => {
+  window.open('https://scholar.google.com/citations?hl=ko&user=Abd4YukAAAAJ&view_op=list_works&gmla=AEk_c1txzNqTE-xjIOKhZZs4U83PxBNIPcJRlo3MZFsUt2PzEJKSCuUa2qw4JNBivwXpoV6u7ftErEagy2jw6H9Ui42T6Rbq2XRECWkP1t4tDRZwMj-enJUPyg', '_blank');
+});
+</script>
