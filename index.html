@@ -78,33 +78,6 @@
             <div id="shim-intro-content" style="text-align:left;"></div>
             <button id="btn-shim-intro-close" style="margin-top:24px; padding:8px 24px; border:none; border-radius:6px; background:#ffd700; color:#23232b; font-weight:bold; font-size:16px; cursor:pointer;">닫기</button>
           </div>
-      // 심보광 카드 자기소개/연구업적 버튼 동작
-      const btnShimIntro = document.getElementById('btn-shim-intro');
-      const shimIntroDiv = document.getElementById('shim-intro');
-      const shimIntroContent = document.getElementById('shim-intro-content');
-      const btnShimIntroClose = document.getElementById('btn-shim-intro-close');
-      const canvasContainer = document.getElementById('canvas-container');
-
-      btnShimIntro.addEventListener('click', () => {
-        shimIntroDiv.style.display = 'block';
-        canvasContainer.style.display = 'none';
-        shimIntroContent.innerHTML = `
-        <div style="padding-left:18px;">
-          <div style='font-size:1.25em; font-weight:600; margin-bottom:2px;'>Research and Interests</div>
-          <li>박사과정, 덕성여자대학교 ICT융합공학과</li>
-          <li>주요 연구 분야: 인공지능, 신호처리, 음악정보처리</li>
-          <li>음악 및 오디오 신호의 분석과 생성에 대한 연구 수행</li>
-          <li>딥러닝 기반 음악 장르 분류, 악기 분리, 음악 생성 등 다양한 프로젝트 참여</li>
-          <li>국내외 학술대회 및 저널 논문 다수 발표</li>
-          <li>프로그래밍 언어: Python, MATLAB, C++ 등</li>
-          <li>관심 분야: 음악과 기술의 융합, 창의적 미디어 아트</li>
-        </div>
-        `;
-      });
-      btnShimIntroClose.addEventListener('click', () => {
-        shimIntroDiv.style.display = 'none';
-        canvasContainer.style.display = 'block';
-      });
       <script>
       // 심보광 카드 연구업적 버튼 표시 및 동작
       const shimProfile = document.getElementById('shim-profile');
