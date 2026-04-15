@@ -102,6 +102,7 @@ function showBtns() {
   btns.style.display = 'flex';
 }
 function hideBtnsDelayed() {
+  if (introVisible) return; // 자기소개가 열려 있으면 버튼을 숨기지 않음
   if (hideTimeout) clearTimeout(hideTimeout);
   hideTimeout = setTimeout(() => {
     btns.style.display = 'none';
