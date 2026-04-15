@@ -77,7 +77,12 @@
   <main>
     <h1>p5.js Sketch</h1>
     <div id="canvas-container"></div>
-    <div id="professor-intro" style="display:none; background:#23232b; color:#fff; padding:18px; border-radius:10px; max-width:420px; margin:18px auto 18px auto;"></div>
+    <div id="professor-intro" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(30,32,40,0.97); color:#fff; z-index:1000; padding:0; margin:0; display:flex; align-items:center; justify-content:center;">
+      <div style="background:#23232b; padding:36px 32px; border-radius:18px; max-width:480px; width:90%; box-shadow:0 4px 32px #0008; text-align:center;">
+        <div id="professor-intro-content"></div>
+        <button id="btn-intro-close" style="margin-top:24px; padding:8px 24px; border:none; border-radius:6px; background:#ffd700; color:#23232b; font-weight:bold; font-size:16px; cursor:pointer;">닫기</button>
+      </div>
+    </div>
   </main>
 </body>
 </html>
@@ -113,13 +118,18 @@ btns.addEventListener('mouseenter', showBtns);
 btns.addEventListener('mouseleave', hideBtnsDelayed);
 btnIntro.addEventListener('click', () => {
   introVisible = !introVisible;
-  // p5js 스케치 아래에 자기소개 표시
   const introDiv = document.getElementById('professor-intro');
-  introDiv.style.display = introVisible ? 'block' : 'none';
+  const introContent = document.getElementById('professor-intro-content');
+  introDiv.style.display = introVisible ? 'flex' : 'none';
   if (introVisible) {
-    introDiv.innerHTML = '<b>자기소개</b><br>아직 내용이 없습니다.';
-    introDiv.scrollIntoView({behavior: 'smooth', block: 'center'});
+    introContent.innerHTML = '<b>자기소개</b><br>아직 내용이 없습니다.';
   }
+});
+
+// 닫기 버튼 이벤트
+document.getElementById('btn-intro-close').addEventListener('click', () => {
+  document.getElementById('professor-intro').style.display = 'none';
+  introVisible = false;
 });
 btnLink.addEventListener('click', () => {
   window.open('https://scholar.google.com/citations?hl=ko&user=Abd4YukAAAAJ&view_op=list_works&gmla=AEk_c1txzNqTE-xjIOKhZZs4U83PxBNIPcJRlo3MZFsUt2PzEJKSCuUa2qw4JNBivwXpoV6u7ftErEagy2jw6H9Ui42T6Rbq2XRECWkP1t4tDRZwMj-enJUPyg', '_blank');
