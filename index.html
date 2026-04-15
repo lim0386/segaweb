@@ -62,16 +62,45 @@
           <p class="student-email">Email: botirjonabdulvoxidov@gmail.com</p>
         </div>
       </div>
-      <a href="https://scholar.google.com/citations?hl=ko&user=FsV6clgAAAAJ" target="_blank" style="text-decoration:none;color:inherit;">
-        <div class="student-profile">
-          <img src="shseo.jpg" alt="서수현 사진" class="student-photo">
-          <div class="student-info">
-            <h3 class="student-name">서수현</h3>
-            <p class="student-title">석사과정</p>
-            <p class="student-email">Email: watermu@duksung.ac.kr</p>
-          </div>
+      <div class="student-profile" id="seo-profile">
+        <img src="shseo.jpg" alt="서수현 사진" class="student-photo">
+        <div class="student-info">
+          <h3 class="student-name">서수현</h3>
+          <p class="student-title">석사과정</p>
+          <p class="student-email">Email: watermu@duksung.ac.kr</p>
         </div>
-      </a>
+      </div>
+      <div id="seo-buttons" style="display:none; margin-bottom:12px;">
+        <button id="btn-seo-link" type="button">Google Scholar</button>
+      </div>
+    <script>
+    // 서수현 카드 구글 스콜라 버튼 표시 및 동작
+    const seoProfile = document.getElementById('seo-profile');
+    const seoBtns = document.getElementById('seo-buttons');
+    const btnSeoLink = document.getElementById('btn-seo-link');
+    let seoHideTimeout = null;
+
+    function showSeoBtns() {
+      if (seoHideTimeout) {
+        clearTimeout(seoHideTimeout);
+        seoHideTimeout = null;
+      }
+      seoBtns.style.display = 'flex';
+    }
+    function hideSeoBtnsDelayed() {
+      if (seoHideTimeout) clearTimeout(seoHideTimeout);
+      seoHideTimeout = setTimeout(() => {
+        seoBtns.style.display = 'none';
+      }, 2000);
+    }
+    seoProfile.addEventListener('mouseenter', showSeoBtns);
+    seoProfile.addEventListener('mouseleave', hideSeoBtnsDelayed);
+    seoBtns.addEventListener('mouseenter', showSeoBtns);
+    seoBtns.addEventListener('mouseleave', hideSeoBtnsDelayed);
+    btnSeoLink.addEventListener('click', () => {
+      window.open('https://scholar.google.com/citations?hl=ko&user=FsV6clgAAAAJ', '_blank');
+    });
+    </script>
     </div>
   </section>
   <main>
