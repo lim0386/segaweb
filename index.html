@@ -83,7 +83,7 @@
 </body>
 </html>
 <script>
-// 임양규 카드 클릭 시 버튼 표시
+// 임양규 카드 마우스 오버 시 버튼 표시
 const profCard = document.getElementById('professor-card');
 const btns = document.getElementById('professor-buttons');
 const intro = document.getElementById('professor-intro');
@@ -91,8 +91,19 @@ const btnIntro = document.getElementById('btn-intro');
 const btnLink = document.getElementById('btn-link');
 let introVisible = false;
 
-profCard.addEventListener('click', () => {
-  btns.style.display = btns.style.display === 'none' ? 'flex' : 'none';
+profCard.addEventListener('mouseenter', () => {
+  btns.style.display = 'flex';
+});
+profCard.addEventListener('mouseleave', () => {
+  btns.style.display = 'none';
+  intro.style.display = 'none';
+  introVisible = false;
+});
+btns.addEventListener('mouseenter', () => {
+  btns.style.display = 'flex';
+});
+btns.addEventListener('mouseleave', () => {
+  btns.style.display = 'none';
   intro.style.display = 'none';
   introVisible = false;
 });
