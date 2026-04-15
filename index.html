@@ -40,15 +40,17 @@
             <p class="student-email">Email: galent@duksung.ac.kr</p>
           </div>
         </div>
-        <div id="shim-buttons" style="display:none; margin-top:8px; margin-bottom:12px;">
+        <div id="shim-buttons" style="display:none; margin-top:8px; margin-bottom:12px; gap:8px;">
           <button id="btn-shim-intro" type="button">자기소개</button>
+          <button id="btn-shim-link" type="button">연구업적</button>
         </div>
       </div>
           <script>
-          // 심보광 카드 자기소개 버튼 표시 및 동작
+          // 심보광 카드 자기소개/연구업적 버튼 표시 및 동작
           const shimProfile = document.getElementById('shim-profile');
           const shimBtns = document.getElementById('shim-buttons');
           const btnShimIntro = document.getElementById('btn-shim-intro');
+          const btnShimLink = document.getElementById('btn-shim-link');
           let shimHideTimeout = null;
 
           function showShimBtns() {
@@ -68,6 +70,9 @@
           shimProfile.addEventListener('mouseleave', hideShimBtnsDelayed);
           shimBtns.addEventListener('mouseenter', showShimBtns);
           shimBtns.addEventListener('mouseleave', hideShimBtnsDelayed);
+          btnShimLink.addEventListener('click', () => {
+            window.open('https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002914157', '_blank');
+          });
           </script>
           <div id="shim-intro" style="display:none; background:#23232b; color:#fff; padding:36px 32px; border-radius:18px; max-width:480px; width:90%; box-shadow:0 4px 32px #0008; text-align:left; margin:32px auto 0 auto;">
             <div id="shim-intro-content" style="text-align:left;"></div>
