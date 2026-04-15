@@ -30,14 +30,47 @@
   <!-- 학생 카드 -->
   <section class="student-card">
     <div class="student-row">
-      <div class="student-profile">
-        <img src="bkshim.jpg" alt="심보광 사진" class="student-photo">
-        <div class="student-info">
-          <h3 class="student-name">심보광</h3>
-          <p class="student-title">박사과정</p>
-          <p class="student-email">Email: galent@duksung.ac.kr</p>
+      <div style="display:flex; flex-direction:column; align-items:flex-start;">
+        <div class="student-profile" id="shim-profile">
+          <img src="bkshim.jpg" alt="심보광 사진" class="student-photo">
+          <div class="student-info">
+            <h3 class="student-name">심보광</h3>
+            <p class="student-title">박사과정</p>
+            <p class="student-email">Email: galent@duksung.ac.kr</p>
+          </div>
+        </div>
+        <div id="shim-buttons" style="display:none; margin-top:8px; margin-bottom:12px;">
+          <button id="btn-shim-link" type="button">연구업적</button>
         </div>
       </div>
+      <script>
+      // 심보광 카드 연구업적 버튼 표시 및 동작
+      const shimProfile = document.getElementById('shim-profile');
+      const shimBtns = document.getElementById('shim-buttons');
+      const btnShimLink = document.getElementById('btn-shim-link');
+      let shimHideTimeout = null;
+
+      function showShimBtns() {
+        if (shimHideTimeout) {
+          clearTimeout(shimHideTimeout);
+          shimHideTimeout = null;
+        }
+        shimBtns.style.display = 'flex';
+      }
+      function hideShimBtnsDelayed() {
+        if (shimHideTimeout) clearTimeout(shimHideTimeout);
+        shimHideTimeout = setTimeout(() => {
+          shimBtns.style.display = 'none';
+        }, 2000);
+      }
+      shimProfile.addEventListener('mouseenter', showShimBtns);
+      shimProfile.addEventListener('mouseleave', hideShimBtnsDelayed);
+      shimBtns.addEventListener('mouseenter', showShimBtns);
+      shimBtns.addEventListener('mouseleave', hideShimBtnsDelayed);
+      btnShimLink.addEventListener('click', () => {
+        window.open('https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002914157', '_blank');
+      });
+      </script>
       <div class="student-profile">
         <img src="mhmoon.png" alt="문민혜 사진" class="student-photo">
         <div class="student-info">
