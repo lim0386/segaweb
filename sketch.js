@@ -15,7 +15,8 @@ let padding = 24;
 
 // interaction state
 let hoverIndex = -1;
-let visibleButtons = {}; // id -> expiry millis
+// visibleButtons[id] = { expiry: ms, alpha: 0 }
+let visibleButtons = {};
 let introOpen = false;
 let introContent = '';
 
