@@ -24,7 +24,7 @@
       <div class="sega-lab-title">Sound Exploration & Generative Arts</div>
     </div>
   </section>
-  <div id="professor-buttons" class="buttons-overlay" style="display:none; position:absolute; left:0; top:100%; margin-top:-8px;">
+  <div id="professor-buttons" class="buttons-overlay" style="display:none; position:absolute; left:0; top:100%; margin-top:4px;">
     <button id="btn-intro" type="button">자기소개</button>
     <button id="btn-link" type="button">Google Scholar</button>
     <button id="btn-youtube" type="button">YouTube</button>
@@ -329,6 +329,8 @@ function showBtns() {
   }
   btns.style.display = 'flex';
   btns.classList.remove('visible');
+  // mark parent so following student section can gain top spacing
+  if (profCard && profCard.parentElement) profCard.parentElement.classList.add('buttons-open');
   requestAnimationFrame(() => btns.classList.add('visible'));
 }
 function hideBtnsDelayed() {
@@ -337,6 +339,8 @@ function hideBtnsDelayed() {
   hideTimeout = setTimeout(() => {
     btns.classList.remove('visible');
     setTimeout(() => { btns.style.display = 'none'; intro.style.display = 'none'; introVisible = false; }, 240);
+    // remove spacing marker
+    if (profCard && profCard.parentElement) profCard.parentElement.classList.remove('buttons-open');
   }, 2000);
 }
 
@@ -350,6 +354,7 @@ btnIntro.addEventListener('click', () => {
   const introContent = document.getElementById('professor-intro-content');
   const canvasContainer = document.getElementById('canvas-container');
   if (introVisible) {
+    if (profCard && profCard.parentElement) profCard.parentElement.classList.add('buttons-open');
     introDiv.style.display = 'block';
     canvasContainer.style.display = 'none';
     introContent.innerHTML = `
