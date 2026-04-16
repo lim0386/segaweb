@@ -2,6 +2,8 @@ let menus = ['PUBLICATION', 'EDUCATION', 'EXPERIENCE', 'VIDEO', 'GALLERY', 'CONT
 let nodes = [];
 let mic; // p5.AudioIn
 let micLevel = 0;
+let wavePoints = []; // store wave y-values per x-step for collision
+const WAVE_STEP = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -50,6 +52,32 @@ class MenuNode {
     // 이동과 속도 제한
     this.pos.add(this.vel);
     this.vel.limit(4);
+
+    // 파형과 충돌 체크: wavePoints에 따라 튕기기
+    if (wavePoints && wavePoints.length > 0) {
+      let xi = floor(this.pos.x / WAVE_STEP);
+      xi = constrain(xi, 0, wavePoints.length - 1);
+      let wy = wavePoints[xi];
+      if (wy !== undefined) {
+        let distToWave = this.pos.y - wy; // positive if node below the wave
+        let overlap = (this.size / 2) - abs(distToWave);
+        // if absolute vertical distance is less than radius -> collision
+        if (abs(distToWave) < this.size / 2) {
+          // push node out and invert Y velocity for bounce
+          if (distToWave > 0) {
+            // node is below wave, move it below
+            this.pos.y = wy + this.size / 2 + 1;
+            this.vel.y = abs(this.vel.y) * 0.9;
+          } else {
+            // node is above wave, push it above
+            this.pos.y = wy - this.size / 2 - 1;
+            this.vel.y = -abs(this.vel.y) * 0.9;
+          }
+          // add slight horizontal jitter so node doesn't stick
+          this.vel.x += random(-0.5, 0.5);
+        }
+      }
+    }
 
     // 벽에 튕기기
     if (this.pos.x < 50 || this.pos.x > width - 50) this.vel.x *= -1;
