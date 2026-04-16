@@ -261,11 +261,14 @@
         seoHideTimeout = null;
       }
       seoBtns.style.display = 'flex';
+      seoBtns.classList.remove('visible');
+      requestAnimationFrame(() => seoBtns.classList.add('visible'));
     }
     function hideSeoBtnsDelayed() {
       if (seoHideTimeout) clearTimeout(seoHideTimeout);
       seoHideTimeout = setTimeout(() => {
-        seoBtns.style.display = 'none';
+        seoBtns.classList.remove('visible');
+        setTimeout(() => { seoBtns.style.display = 'none'; }, 240);
       }, 2000);
     }
     seoProfile.addEventListener('mouseenter', showSeoBtns);
