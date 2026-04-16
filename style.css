@@ -40,6 +40,7 @@
 .student-row {
   display: flex;
   gap: 24px;
+  overflow: visible;
 }
 .student-profile {
   display: flex;
@@ -49,7 +50,8 @@
   padding: 13px 18px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.10);
   max-width: 370px;
-  min-width: 270px;
+  min-width: 0; /* allow shrinking when scaled */
+  overflow: visible;
 }
 .student-photo {
   width: 90px;
