@@ -50,9 +50,15 @@
   padding: 13px 18px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.10);
   max-width: 370px;
-  min-width: 0; /* allow shrinking when scaled */
+  min-width: 220px; /* ensure readable min width */
   overflow: visible;
 }
+
+.student-info{ min-width:0; }
+.student-name, .student-title, .student-email{ white-space:normal; }
+
+#professor-card{ z-index: 800; position: relative; }
+#professor-buttons{ z-index: 9999 !important; }
 .student-photo {
   width: 90px;
   height: 90px;
