@@ -49,10 +49,9 @@
   border-radius: 10px;
   padding: 13px 18px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.10);
-  width: var(--card-base-w);
-  min-height: var(--card-base-h);
-  box-sizing: border-box;
-  overflow: hidden;
+  max-width: 370px;
+  min-width: 220px; /* ensure readable min width */
+  overflow: visible;
 }
 
 .student-info{ min-width:0; }
@@ -107,9 +106,7 @@ h1{font-size:18px;margin:0 0 8px 0}
   padding: 16px 20px;
   margin-bottom: 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  width: var(--card-base-w);
-  min-height: var(--card-base-h);
-  box-sizing: border-box;
+  max-width: 420px;
 }
 #professor-photo {
   width: 100px;
@@ -135,13 +132,13 @@ h1{font-size:18px;margin:0 0 8px 0}
 }
 /* Ensure profile wrappers keep layout stable and buttons overlay */
 .profile-wrap{ position: relative; display:inline-block; }
-.profile-wrap > div[id$="-buttons"]{ position:absolute; left:0; top:100%; gap:8px; z-index:10000; }
+.profile-wrap > div[id$="-buttons"]{ position:absolute; left:0; top:100%; display:none; gap:8px; z-index:10; }
 /* Prevent any accidental transform/scale on hover */
 .student-profile, #professor-card { transition: none !important; transform: none !important; }
-#professor-buttons{ z-index:10001 !important; }
+#professor-buttons{ display:none; z-index:9999 !important; }
 
 /* responsive card scaling */
-:root{ --card-scale: 1; --card-base-w: 380px; --card-base-h: 120px; }
+:root{ --card-scale: 1; }
 .profile-wrap, #professor-card {
   transform-origin: top center;
   transform: scale(var(--card-scale));
@@ -151,29 +148,29 @@ h1{font-size:18px;margin:0 0 8px 0}
 
 /* When professor buttons are open, push the student section down so buttons are visible */
 /* Reserve space under professor card so buttons can appear without shifting students */
-#professor-card { margin-bottom: calc(56px * var(--card-scale)); }
+/* keep original fixed spacing for professor card */
 
 /* scale inner elements proportionally using the same variable so layout and wrapping adapt */
-.student-profile{ min-width: calc(220px * var(--card-scale)); }
-.student-photo{
-  width: calc(90px * var(--card-scale));
-  height: calc(90px * var(--card-scale));
-  margin-right: calc(18px * var(--card-scale));
-  border-width: calc(2px * var(--card-scale));
-}
-.student-name{ font-size: calc(18px * var(--card-scale)); }
-.student-title{ font-size: calc(14px * var(--card-scale)); }
-.student-email{ font-size: calc(13px * var(--card-scale)); }
-.student-info{ gap: calc(6px * var(--card-scale)); }
-
 #professor-photo{
-  width: calc(100px * var(--card-scale));
-  height: calc(100px * var(--card-scale));
-  margin-right: calc(18px * var(--card-scale));
-  border-width: calc(2px * var(--card-scale));
+  width: 100px;
+  height: 100px;
+  margin-right: 18px;
+  border-width: 2px;
 }
-#professor-card{ padding: calc(16px * var(--card-scale)) calc(20px * var(--card-scale)); border-radius: calc(12px * var(--card-scale)); }
-#professor-card h2{ font-size: calc(22px * var(--card-scale)); }
+#professor-card{ padding: 16px 20px; border-radius: 12px; }
+#professor-card h2{ font-size: 22px; }
+
+.student-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 18px;
+  border: 2px solid #555;
+}
+.student-name { font-size: 18px; }
+.student-title { font-size: 14px; }
+.student-email { font-size: 13px; }
 
 .student-name, .student-title, .student-email{ overflow-wrap: break-word; }
 
