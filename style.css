@@ -78,10 +78,10 @@
   color: #a0a0a0;
 }
 /* 간단한 스타일 */
-html,body{height:100%;}
+html,body{height:100%; overflow:hidden;}
 body{
   margin:0;
-  padding:16px;
+  padding:12px;
   font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   background:#0b0b0d;
   color:#fff;
