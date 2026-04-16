@@ -182,6 +182,22 @@
           canvasContainer.style.display = 'none';
         });
         </script>
+        <script>
+        // 김영한 카드 (간단한 버튼 오버레이)
+        const kimProfile = document.getElementById('kim-profile');
+        const kimBtns = document.getElementById('kim-buttons');
+        const btnKimLink = document.getElementById('btn-kim-link');
+        let kimHideTimeout = null;
+        function showKimBtns(){
+          if(kimHideTimeout){ clearTimeout(kimHideTimeout); kimHideTimeout = null; }
+          kimBtns.style.display = 'flex';
+          kimBtns.classList.remove('visible');
+          requestAnimationFrame(()=> kimBtns.classList.add('visible'));
+        }
+        function hideKimBtnsDelayed(){ if(kimHideTimeout) clearTimeout(kimHideTimeout); kimHideTimeout = setTimeout(()=>{ kimBtns.classList.remove('visible'); setTimeout(()=> kimBtns.style.display='none', 240); }, 2000); }
+        if(kimProfile){ kimProfile.addEventListener('mouseenter', showKimBtns); kimProfile.addEventListener('mouseleave', hideKimBtnsDelayed); kimBtns.addEventListener('mouseenter', showKimBtns); kimBtns.addEventListener('mouseleave', hideKimBtnsDelayed); }
+        if(btnKimLink) btnKimLink.addEventListener('click', ()=>{ window.open('#','_blank'); });
+        </script>
         <div class="profile-wrap" style="display:flex; flex-direction:column; align-items:flex-start; position:relative;">
           <div class="student-profile" id="kim-profile">
             <img src="yhkim.png" alt="김영한 사진" class="student-photo">
