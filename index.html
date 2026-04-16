@@ -217,11 +217,14 @@
           botiHideTimeout = null;
         }
         botiBtns.style.display = 'flex';
+        botiBtns.classList.remove('visible');
+        requestAnimationFrame(() => botiBtns.classList.add('visible'));
       }
       function hideBotiBtnsDelayed() {
         if (botiHideTimeout) clearTimeout(botiHideTimeout);
         botiHideTimeout = setTimeout(() => {
-          botiBtns.style.display = 'none';
+          botiBtns.classList.remove('visible');
+          setTimeout(() => { botiBtns.style.display = 'none'; }, 240);
         }, 2000);
       }
       botiProfile.addEventListener('mouseenter', showBotiBtns);
