@@ -1,4 +1,4 @@
-let menus = ['PUBLICATION', 'EDUCATION', 'EXPERIENCE', 'VIDEO', 'GALLERY', 'CONTACT'];
+let menus = ['EXPERIENCE', 'GALLERY', 'EDUCATION'];
 let nodes = [];
 let mic; // p5.AudioIn
 let micLevel = 0;
@@ -6,31 +6,59 @@ let wavePoints = []; // store wave y-values per x-step for collision
 const WAVE_STEP = 10;
 const GRAVITY = 0.25;
 
+// UI data
+let images = {};
+let profiles = [];
+let cardW = 420;
+let cardH = 140;
+let padding = 24;
+
+// interaction state
+let hoverIndex = -1;
+let visibleButtons = {}; // id -> expiry millis
+let introOpen = false;
+let introContent = '';
+
+function preload(){
+  const files = { yklim: 'yklim.jpg', shim: 'bkshim.jpg', moon: 'mhmoon2.png', kim: 'yhkim.png', boti: 'boti.png', seo: 'shseo.jpg' };
+  for(let k in files){
+    images[k] = loadImage(files[k], ()=>{}, ()=>{ images[k]=null; });
+  }
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  // 메뉴 노드 생성
-  // 마이크 입력 초기화 (사용자가 브라우저에서 권한을 허용해야 작동합니다)
   mic = new p5.AudioIn();
   mic.start();
+
+  profiles = [
+    { id:'prof', name:'임양규 교수', title:'연구실 대표 교수', email:'trumpetyk09@duksung.ac.kr', img: images.yklim, type:'professor' },
+    { id:'shim', name:'심보광', title:'박사과정', email:'galent@duksung.ac.kr', img: images.shim, type:'student' },
+    { id:'moon', name:'문민혜', title:'석사과정', email:'minhyemoon@duksung.ac.kr', img: images.moon, type:'student' },
+    { id:'kim', name:'김영한', title:'석사과정', email:'', img: images.kim, type:'student' },
+    { id:'boti', name:'보티존', title:'석사과정', email:'botirjonabdulvoxidov@gmail.com', img: images.boti, type:'student' },
+    { id:'seo', name:'서수현', title:'석사과정', email:'watermu@duksung.ac.kr', img: images.seo, type:'student' }
+  ];
+
   for (let i = 0; i < menus.length; i++) {
-    // spawn nodes from above the canvas so they fall in
     nodes.push(new MenuNode(random(60, width - 60), random(-220, -40), menus[i]));
   }
 }
 
 function draw() {
-  background(15, 15, 25); // 어두운 테마
-  
-  // 배경에 은은한 파형 효과 (Music Skyline 컨셉 차용)
+  background(15, 15, 25);
+
   drawBackgroundWave();
+
+  layoutCards();
 
   for (let node of nodes) {
     node.update();
     node.display();
-    node.checkHover(mouseX, mouseY);
   }
-  // separate nodes so they don't overlap visually
   separateNodes();
+
+  if (introOpen) drawIntroPanel();
 }
 
 function separateNodes(){
@@ -42,7 +70,6 @@ function separateNodes(){
       let d = p5.Vector.dist(a.pos, b.pos);
       if(d < minDist){
         if(d < 0.001){
-          // avoid exact overlap
           let jitter = createVector(random(-1,1), random(-1,1)).mult(2);
           a.pos.add(jitter);
           d = p5.Vector.dist(a.pos, b.pos);
@@ -52,7 +79,6 @@ function separateNodes(){
         let push = dir.mult(overlap * 0.5);
         a.pos.add(push);
         b.pos.sub(push);
-        // damp/adjust velocities to reduce future overlap
         a.vel.add(push.copy().mult(0.08));
         b.vel.sub(push.copy().mult(0.08));
       }
@@ -63,7 +89,6 @@ function separateNodes(){
 class MenuNode {
   constructor(x, y, label) {
     this.pos = createVector(x, y);
-    // give an initial downward velocity so nodes drop
     this.vel = createVector(random(-0.6, 0.6), random(1, 3));
     this.label = label;
     this.size = 80;
@@ -71,7 +96,6 @@ class MenuNode {
   }
 
   update() {
-    // 커서(마우스)를 피하는 동작
     let mousePos = createVector(constrain(mouseX, 0, width), constrain(mouseY, 0, height));
     let d = p5.Vector.dist(this.pos, mousePos);
     const avoidRadius = 120;
@@ -81,95 +105,61 @@ class MenuNode {
       this.vel.add(away);
     }
 
-    // apply gravity and integrate
     this.vel.y += GRAVITY;
     this.pos.add(this.vel);
     this.vel.limit(8);
 
-    // 파형과 충돌 체크: wavePoints에 따라 튕기기
     if (wavePoints && wavePoints.length > 0) {
       let xi = floor(this.pos.x / WAVE_STEP);
       xi = constrain(xi, 0, wavePoints.length - 1);
       let wy = wavePoints[xi];
       if (wy !== undefined) {
-        let distToWave = this.pos.y - wy; // positive if node below the wave
-        let overlap = (this.size / 2) - abs(distToWave);
-        // if absolute vertical distance is less than radius -> collision
+        let distToWave = this.pos.y - wy;
         if (abs(distToWave) < this.size / 2) {
-          // Ensure node stays above the wave surface — never sink below.
-          // Always position node just above the wave and give an upward bounce.
           this.pos.y = wy - this.size / 2 - 1;
-          this.vel.y = -max(1, abs(this.vel.y)) * 0.8; // bounce up with some energy
-          // add slight horizontal jitter so node doesn't stick
+          this.vel.y = -max(1, abs(this.vel.y)) * 0.8;
           this.vel.x += random(-0.6, 0.6);
         }
       }
     }
 
-    // 벽에 튕기기 (x축은 반사)
-    if (this.pos.x < 50) {
-      this.pos.x = 50;
-      this.vel.x *= -1;
-    }
-    if (this.pos.x > width - 50) {
-      this.pos.x = width - 50;
-      this.vel.x *= -1;
-    }
+    if (this.pos.x < 50) { this.pos.x = 50; this.vel.x *= -1; }
+    if (this.pos.x > width - 50) { this.pos.x = width - 50; this.vel.x *= -1; }
 
-    // 바닥 처리: 바닥에 걸려서 떨지 않도록 위치 보정 및 감쇠/반발
     const bottomLimit = height - 40;
     if (this.pos.y > bottomLimit) {
       this.pos.y = bottomLimit;
-      // if vertical speed is very small, give a small kick upward to avoid trembling
       if (abs(this.vel.y) < 0.6) this.vel.y = -random(2, 4);
       else this.vel.y = -abs(this.vel.y) * 0.6;
-      // damp horizontal motion slightly
       this.vel.x *= 0.9;
     }
 
-    // ceiling
-    if (this.pos.y < -120) {
-      this.pos.y = -120;
-      this.vel.y = 0.1;
-    }
-
-    // light air friction
+    if (this.pos.y < -120) { this.pos.y = -120; this.vel.y = 0.1; }
     this.vel.mult(0.995);
   }
 
   display() {
     stroke(255, 150);
     noFill();
+    ellipse(this.pos.x, this.pos.y, this.size);
     if (this.isHovered) {
-      fill(0, 150, 255, 50);
+      fill(0, 150, 255, 40);
       ellipse(this.pos.x, this.pos.y, this.size * 1.2);
     }
-    ellipse(this.pos.x, this.pos.y, this.size);
-    
     textAlign(CENTER, CENTER);
     fill(255);
     noStroke();
     text(this.label, this.pos.x, this.pos.y);
   }
-
-  checkHover(mx, my) {
-    let d = dist(mx, my, this.pos.x, this.pos.y);
-    this.isHovered = (d < this.size / 2);
-  }
-  
-  // 클릭 시 실제 페이지로 이동하는 로직 추가 가능
 }
 
 function drawBackgroundWave() {
-  // 마이크 레벨을 사용해 파형의 진폭을 조절
   micLevel = mic ? mic.getLevel() : 0;
-  // micLevel 보정
   let amp = constrain(map(micLevel, 0, 0.3, 0, 1), 0, 1);
-  let sway = amp * 700; // 진폭 스케일
+  let sway = amp * 700;
 
   stroke(255, 30);
   noFill();
-  // build wavePoints at WAVE_STEP resolution for collision checks
   wavePoints = [];
   beginShape();
   for (let x = 0; x < width; x += WAVE_STEP) {
@@ -180,6 +170,159 @@ function drawBackgroundWave() {
     wavePoints.push(y);
   }
   endShape();
+}
+
+function layoutCards(){
+  // responsive card size
+  cardW = min(420, width * 0.28);
+  cardH = cardW * 0.38;
+  padding = 24;
+
+  // professor top-left
+  let px = padding;
+  let py = padding + 20;
+  drawCard(profiles[0], px, py, cardW, cardH);
+
+  // students row below
+  let startY = py + cardH + 28;
+  let gap = 18;
+  let cols = floor((width - padding*2 + gap) / (cardW + gap));
+  cols = max(1, cols);
+  let x = padding;
+  let y = startY;
+  for(let i=1;i<profiles.length;i++){
+    drawCard(profiles[i], x, y, cardW, cardH);
+    x += cardW + gap;
+    if (x + cardW > width - padding){ x = padding; y += cardH + gap; }
+  }
+}
+
+function drawCard(p, x, y, w, h){
+  // save rect for interaction
+  p._x = x; p._y = y; p._w = w; p._h = h;
+
+  push();
+  // card background
+  noStroke();
+  fill(36,36,43, 220);
+  rect(x, y, w, h, 12);
+
+  // photo circle
+  let imgSize = h - 20;
+  let ix = x + 12; let iy = y + (h - imgSize)/2;
+  if (p.img) {
+    push();
+    fill(255);
+    rect(ix, iy, imgSize, imgSize, 10);
+    imageMode(CORNER);
+    image(p.img, ix, iy, imgSize, imgSize);
+    pop();
+  } else {
+    fill(80);
+    rect(ix, iy, imgSize, imgSize, 10);
+    fill(180); textAlign(CENTER, CENTER); textSize(14);
+    text('No Image', ix + imgSize/2, iy + imgSize/2);
+  }
+
+  // text
+  fill(255); textAlign(LEFT, TOP);
+  let tx = ix + imgSize + 12;
+  let ty = y + 12;
+  textSize(18); text(p.name, tx, ty);
+  textSize(12); fill(200); text(p.title, tx, ty + 26);
+  textSize(11); fill(170); text(p.email, tx, ty + 46);
+
+  // hover detection
+  if (mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h){
+    hoverIndex = profiles.indexOf(p);
+    // extend button visibility by 2s while hovered
+    visibleButtons[p.id] = millis() + 2000;
+  } else {
+    // keep whatever expiry exists
+    if (!visibleButtons[p.id]) visibleButtons[p.id] = 0;
+  }
+
+  // draw buttons if visible
+  if (visibleButtons[p.id] && visibleButtons[p.id] > millis()){
+    drawButtons(p, x, y, w, h);
+  }
+
+  pop();
+}
+
+function drawButtons(p, x, y, w, h){
+  push();
+  let bx = x + 12;
+  let by = y + h + 8;
+  let bw = 100; let bh = 30; let bgap = 8;
+  // buttons array depends on type
+  let buttons = [];
+  if (p.type === 'professor') buttons = ['자기소개','Google Scholar','YouTube'];
+  else buttons = ['자기소개','연구업적'];
+
+  for(let i=0;i<buttons.length;i++){
+    let rx = bx + i * (bw + bgap);
+    fill(255); rect(rx, by, bw, bh, 8);
+    fill(12); textAlign(CENTER, CENTER); textSize(13);
+    text(buttons[i], rx + bw/2, by + bh/2);
+    // store button geometry for click handling
+    p._buttons = p._buttons || [];
+    p._buttons[i] = { x: rx, y: by, w: bw, h: bh, label: buttons[i] };
+  }
+  pop();
+}
+
+function drawIntroPanel(){
+  push();
+  let W = min(680, width - 80);
+  let H = min(420, height - 160);
+  let x = (width - W)/2; let y = (height - H)/2;
+  fill(36,36,43, 240); rect(x, y, W, H, 14);
+  fill(255); textSize(16); textAlign(LEFT, TOP);
+  text(introContent, x + 24, y + 24, W - 48, H - 80);
+  // close button
+  let cx = x + W - 96; let cy = y + H - 56; fill(255); rect(cx, cy, 72, 36, 8);
+  fill(12); textAlign(CENTER, CENTER); text('닫기', cx + 36, cy + 18);
+  pop();
+}
+
+function mousePressed(){
+  if (introOpen){
+    // check close
+    let W = min(680, width - 80);
+    let H = min(420, height - 160);
+    let x = (width - W)/2; let y = (height - H)/2;
+    let cx = x + W - 96; let cy = y + H - 56;
+    if (mouseX >= cx && mouseX <= cx + 72 && mouseY >= cy && mouseY <= cy + 36){ introOpen = false; }
+    return;
+  }
+
+  // check buttons on visible cards
+  for(let p of profiles){
+    if (p._buttons){
+      for(let b of p._buttons){
+        if (mouseX >= b.x && mouseX <= b.x + b.w && mouseY >= b.y && mouseY <= b.y + b.h){
+          // handle action
+          if (b.label === '자기소개'){
+            introOpen = true;
+            if (p.id === 'prof') introContent = '임양규 교수\n\n연구실 대표 교수 소개 내용...';
+            else if (p.id === 'moon') introContent = '문민혜 — 석사과정\n\n(이곳에 자기소개 내용이 들어갑니다.)';
+            else if (p.id === 'shim') introContent = '심보광 — 박사과정\n\n(자기소개 내용)';
+            else introContent = p.name + '\n\n(자기소개 내용 없음)';
+          } else if (b.label === '연구업적'){
+            if (p.id === 'shim') window.open('https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002914157','_blank');
+            else if (p.id === 'boti') window.open('https://www.earticle.net/Article/A474319','_blank');
+            else window.open('#','_blank');
+          } else if (b.label === 'Google Scholar'){
+            if (p.id === 'seo') window.open('https://scholar.google.com/citations?hl=ko&user=FsV6clgAAAAJ','_blank');
+            else window.open('#','_blank');
+          } else if (b.label === 'YouTube'){
+            window.open('#','_blank');
+          }
+        }
+      }
+    }
+  }
 }
 
 function windowResized() {
