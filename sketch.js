@@ -13,9 +13,9 @@ function setup() {
   mic = new p5.AudioIn();
   mic.start();
   for (let i = 0; i < menus.length; i++) {
-    // spawn nodes near the top so they fall down
+    // spawn nodes at the same top position so they all drop downward together
     const sx = random(40, width - 40);
-    const sy = random(-180, 40);
+    const sy = -120;
     nodes.push(new MenuNode(sx, sy, menus[i]));
   }
 }
@@ -36,8 +36,8 @@ function draw() {
 class MenuNode {
   constructor(x, y, label) {
     this.pos = createVector(x, y);
-    // start with a small downward velocity so nodes fall
-    this.vel = createVector(random(-0.3, 0.3), random(0.6, 1.6));
+    // ensure nodes all initially move downward (small horizontal jitter only)
+    this.vel = createVector(random(-0.18, 0.18), 1.2);
     this.label = label;
     this.size = 80;
     this.isHovered = false;
