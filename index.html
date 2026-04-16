@@ -145,11 +145,14 @@
             moonHideTimeout = null;
           }
           moonBtns.style.display = 'flex';
+          moonBtns.classList.remove('visible');
+          requestAnimationFrame(() => moonBtns.classList.add('visible'));
         }
         function hideMoonBtnsDelayed() {
           if (moonHideTimeout) clearTimeout(moonHideTimeout);
           moonHideTimeout = setTimeout(() => {
-            moonBtns.style.display = 'none';
+            moonBtns.classList.remove('visible');
+            setTimeout(() => { moonBtns.style.display = 'none'; }, 240);
           }, 2000);
         }
         moonProfile.addEventListener('mouseenter', showMoonBtns);
