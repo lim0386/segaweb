@@ -80,12 +80,19 @@ class MenuNode {
 }
 
 function drawBackgroundWave() {
+  // 마이크 레벨을 사용해 파형의 진폭을 조절
+  micLevel = mic ? mic.getLevel() : 0;
+  // micLevel 보정
+  let amp = constrain(map(micLevel, 0, 0.3, 0, 1), 0, 1);
+  let sway = amp * 700; // 진폭 스케일
+
   stroke(255, 30);
   noFill();
   beginShape();
   for (let x = 0; x < width; x += 10) {
-    let y = noise(x * 0.005, frameCount * 0.01) * height;
-    vertex(x, y);
+    let base = noise(x * 0.005, frameCount * 0.01) * height * 0.5 + height * 0.25;
+    let wave = sin((x * 0.02) + frameCount * 0.06) * sway;
+    vertex(x, base + wave);
   }
   endShape();
 }
