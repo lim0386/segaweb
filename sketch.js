@@ -175,17 +175,20 @@ function drawBackgroundWave() {
 
 function layoutCards(){
   // responsive card size
-  cardW = min(420, width * 0.28);
-  cardH = cardW * 0.38;
+  cardW = min(420, width - padding*2);
+  cardH = 140; // fixed to match original CSS
   padding = 24;
 
-  // professor top-left
+  // compute positions
   let px = padding;
   let py = padding + 20;
-  drawCard(profiles[0], px, py, cardW, cardH);
+
+  // If professor's buttons visible, shift students down so buttons don't overlap
+  let profVisible = visibleButtons['prof'] && visibleButtons['prof'].expiry > millis();
+  let extraShift = profVisible ? 44 : 0;
 
   // students row below
-  let startY = py + cardH + 28;
+  let startY = py + cardH + 28 + extraShift;
   let gap = 18;
   let cols = floor((width - padding*2 + gap) / (cardW + gap));
   cols = max(1, cols);
@@ -196,6 +199,9 @@ function layoutCards(){
     x += cardW + gap;
     if (x + cardW > width - padding){ x = padding; y += cardH + gap; }
   }
+
+  // draw professor last so its buttons render on top
+  drawCard(profiles[0], px, py, cardW, cardH);
 }
 
 function drawCard(p, x, y, w, h){
