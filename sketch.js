@@ -108,11 +108,12 @@ class MenuNode {
 }
 
 function drawBackgroundWave() {
-  // 마이크 레벨을 사용해 파형의 진폭을 조절
-  micLevel = mic ? mic.getLevel() : 0;
-  // micLevel 보정
-  let amp = constrain(map(micLevel, 0, 0.3, 0, 1), 0, 1);
-  let sway = amp * 700; // 진폭 스케일
+  // 마이크 레벨을 사용해 파형의 진폭을 조절 (민감도 향상, 부드러운 보정 적용)
+  let raw = mic ? mic.getLevel() : 0;
+  micLevel = lerp(micLevel, raw, 0.2); // 부드럽게 변화
+  // micLevel 보정: 상한을 낮춰 작은 소리에도 민감하도록 함
+  let amp = constrain(map(micLevel, 0, 0.12, 0, 1), 0, 1);
+  let sway = amp * 1000; // 진폭 스케일 (증가)
 
   stroke(255, 30);
   noFill();
