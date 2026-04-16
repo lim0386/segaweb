@@ -37,7 +37,12 @@
   margin-bottom: 15px;
   margin-top: 32px;
 }
+
+/* shared card width for professor and students */
 :root{ --card-scale: 1; --card-width: 420px; }
+
+.student-row {
+  display: flex;
   gap: 24px;
   overflow: visible;
 }
@@ -48,8 +53,9 @@
   border-radius: 10px;
   padding: 13px 18px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.10);
-  max-width: 370px;
-  min-width: 220px; /* ensure readable min width */
+  width: var(--card-width);
+  max-width: 100%;
+  box-sizing: border-box;
   overflow: visible;
 }
 
