@@ -24,7 +24,7 @@
       <div class="sega-lab-title">Sound Exploration & Generative Arts</div>
     </div>
   </section>
-  <div id="professor-buttons" class="buttons-overlay" style="display:none; position:absolute; left:0; top:100%; margin-top:4px;">
+  <div id="professor-buttons" class="buttons-overlay" style="display:none; position:absolute; left:0; top:100%; margin-top:-8px;">
     <button id="btn-intro" type="button">자기소개</button>
     <button id="btn-link" type="button">Google Scholar</button>
     <button id="btn-youtube" type="button">YouTube</button>
@@ -129,7 +129,28 @@
         </div>
       </div>
     <div id="moon-intro" style="display:none; background:#23232b; color:#fff; padding:36px 32px; border-radius:18px; max-width:480px; width:90%; box-shadow:0 4px 32px #0008; text-align:left; margin:18px auto 18px auto;"></div>
-      
+        <script>
+        // 문민혜 카드 자기소개 버튼 표시 및 동작
+        const moonProfile = document.getElementById('moon-profile');
+        const moonBtns = document.getElementById('moon-buttons');
+        const btnMoonIntro = document.getElementById('btn-moon-intro');
+        const moonIntroDiv = document.getElementById('moon-intro');
+        const moonIntroContent = document.getElementById('moon-intro-content');
+        const btnMoonIntroClose = document.getElementById('btn-moon-intro-close');
+        const canvasContainer = document.getElementById('canvas-container');
+        let moonHideTimeout = null;
+
+        function showMoonBtns() {
+          if (moonHideTimeout) {
+            clearTimeout(moonHideTimeout);
+            moonHideTimeout = null;
+          }
+          moonBtns.style.display = 'flex';
+          moonBtns.classList.remove('visible');
+          requestAnimationFrame(() => moonBtns.classList.add('visible'));
+        }
+        function hideMoonBtnsDelayed() {
+          if (moonHideTimeout) clearTimeout(moonHideTimeout);
           moonHideTimeout = setTimeout(() => {
             moonBtns.classList.remove('visible');
             setTimeout(() => { moonBtns.style.display = 'none'; }, 240);
@@ -157,19 +178,17 @@
           const introContent = document.getElementById('professor-intro-content');
           const canvasContainer = document.getElementById('canvas-container');
           introContent.innerHTML = content;
-          introDiv.classList.add('open');
+          introDiv.style.display = 'block';
           canvasContainer.style.display = 'none';
         });
         </script>
-        <div class="profile-wrap" style="display:flex; flex-direction:column; align-items:flex-start; position:relative;">
-          <div class="student-profile" id="kim-profile">
+        <div class="student-profile">
             <img src="yhkim.png" alt="김영한 사진" class="student-photo">
             <div class="student-info">
               <h3 class="student-name">김영한</h3>
               <p class="student-title">석사과정</p>
               <p class="student-email">Email: </p>
             </div>
-          </div>
         </div>
       <div class="profile-wrap" style="display:flex; flex-direction:column; align-items:flex-start; position:relative;">
         <div class="student-profile" id="boti-profile">
@@ -271,23 +290,6 @@
 </body>
 </html>
 <script>
-// Responsive card scaling: adjust --card-scale based on viewport width
-;(function(){
-  function updateScale(){
-    const w = window.innerWidth;
-    // baseWidth controls nominal size; adjust min/max as desired
-    const base = 1200;
-    const min = 0.6; const max = 1.4;
-    let s = w / base;
-    s = Math.max(min, Math.min(max, s));
-    document.documentElement.style.setProperty('--card-scale', s.toFixed(3));
-  }
-  window.addEventListener('resize', updateScale);
-  window.addEventListener('orientationchange', updateScale);
-  updateScale();
-})();
-</script>
-<script>
 // 임양규 카드 마우스 오버 시 버튼 표시
 const profCard = document.getElementById('professor-card');
 const btns = document.getElementById('professor-buttons');
@@ -329,7 +331,7 @@ btnIntro.addEventListener('click', () => {
   const introContent = document.getElementById('professor-intro-content');
   const canvasContainer = document.getElementById('canvas-container');
   if (introVisible) {
-  introDiv.style.display = 'block';
+    introDiv.style.display = 'block';
     canvasContainer.style.display = 'none';
     introContent.innerHTML = `
   <div style="padding-left:18px;">
