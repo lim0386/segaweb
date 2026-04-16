@@ -80,9 +80,9 @@ class MenuNode {
       }
     }
 
-    // 벽에 튕기기
+    // 벽에 튕기기 (위쪽은 반사하지 않아서 초기 낙하가 느려지지 않게 함)
     if (this.pos.x < 50 || this.pos.x > width - 50) this.vel.x *= -1;
-    if (this.pos.y < 50 || this.pos.y > height - 50) this.vel.y *= -1;
+    if (this.pos.y > height - 50) this.vel.y *= -1;
   }
 
   display() {
