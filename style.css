@@ -186,6 +186,13 @@ h1{font-size:18px;margin:0 0 8px 0}
   display: flex;
   gap: 8px;
 }
+.// temporary: ensure professor buttons are visible for debugging
+#professor-buttons{
+  display:flex !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
 .buttons-overlay.visible{
   opacity: 1;
   transform: translateY(0);
