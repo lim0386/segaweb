@@ -44,9 +44,14 @@ function drawCircularImage(img, x, y, size, crop){
       let sx = crop.sx, sy = crop.sy, sw = crop.sw, sh = crop.sh;
       // ensure integer bounds
       sx = max(0, sx); sy = max(0, sy);
-      sw = max(1, min(img.width - sx, sw));
-      sh = max(1, min(img.height - sy, sh));
-      image(img, sx, sy, sw, sh, x, y, size, size);
+      sw = Math.floor(max(1, min(img.width - sx, sw)));
+      sh = Math.floor(max(1, min(img.height - sy, sh)));
+      // if crop area is too small (or invalid) fall back to full-image draw
+      if (sw < 20 || sh < 20) {
+        image(img, x, y, size, size);
+      } else {
+        image(img, sx, sy, sw, sh, x, y, size, size);
+      }
     } else {
       image(img, x, y, size, size);
     }
@@ -257,13 +262,48 @@ function drawCard(p, x, y, w, h){
   let cx = ix + imgSize/2; let cy = iy + imgSize/2;
   fill(48); noStroke(); ellipse(cx, cy, imgSize, imgSize);
   // for specific profiles we can pass a crop region so the important area is shown
+  // 김영한은 멀리 찍힌 사진이라 얼굴이 작음 -> 중앙 위쪽을 잘라 확대해서 표시
   if (p.id === 'kim' && p.img && p.img.width && p.img.height) {
-    // tuned crop values to focus on the desired area (adjustable)
-    let sx = Math.floor(p.img.width * 0.18);
-    let sy = Math.floor(p.img.height * 0.12);
-    let sw = Math.floor(p.img.width * 0.64);
-    let sh = Math.floor(p.img.height * 0.64);
-    drawCircularImage(p.img, ix, iy, imgSize, { sx, sy, sw, sh });
+    // compute once and cache optimal crop for kim to avoid per-frame cost
+    if (!p._kimCrop) {
+      // candidate zooms and vertical shifts to try
+      const zooms = [0.28, 0.32, 0.38, 0.5];
+      const vy = [0.15, 0.25, 0.35];
+      let best = null; let bestScore = -Infinity;
+      for (let z of zooms) {
+        let sw = Math.floor(p.img.width * z);
+        let sh = Math.floor(p.img.height * z);
+        let sx = Math.floor((p.img.width - sw) / 2);
+        for (let vf of vy) {
+          let sy = Math.floor((p.img.height - sh) * vf);
+          sx = Math.max(0, sx); sy = Math.max(0, sy);
+          // score this crop by sampling a grid of pixels and summing luminance
+          let score = 0; let samples = 0;
+          const stepX = Math.max(1, Math.floor(sw / 10));
+          const stepY = Math.max(1, Math.floor(sh / 10));
+          for (let oy = sy; oy < sy + sh; oy += stepY) {
+            for (let ox = sx; ox < sx + sw; ox += stepX) {
+              const c = p.img.get(ox, oy);
+              if (c) {
+                const r = c[0], g = c[1], b = c[2];
+                const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+                score += lum;
+                samples++;
+              }
+            }
+          }
+          if (samples > 0) score = score / samples;
+          if (score > bestScore) { bestScore = score; best = { sx, sy, sw, sh }; }
+        }
+      }
+      // if nothing found, fall back to center crop
+      if (!best) {
+        const z = 0.32; let sw = Math.floor(p.img.width*z); let sh = Math.floor(p.img.height*z);
+        best = { sx: Math.floor((p.img.width-sw)/2), sy: Math.floor((p.img.height-sh)/3), sw, sh };
+      }
+      p._kimCrop = best;
+    }
+    drawCircularImage(p.img, ix, iy, imgSize, p._kimCrop);
   } else {
     drawCircularImage(p.img, ix, iy, imgSize);
   }
@@ -353,19 +393,28 @@ function mousePressed(){
           // handle action
           if (b.label === '자기소개'){
             introOpen = true;
-            if (p.id === 'prof') introContent = '임양규 교수\n\n연구실 대표 교수 소개 내용...';
-            else if (p.id === 'moon') introContent = '문민혜 — 석사과정\n\n(이곳에 자기소개 내용이 들어갑니다.)';
-            else if (p.id === 'shim') introContent = '심보광 — 박사과정\n\n(자기소개 내용)';
-            else introContent = p.name + '\n\n(자기소개 내용 없음)';
+            if (p.id === 'prof') {
+              introContent = `임양규 교수\n연구실 대표 교수\n\nEducation:\n2015-2020 Chung-Ang University, Seoul, South Korea, Ph.D. in Film and Media Studies (중앙대학교 첨단영상대학원, 영상학박사)\n2007-2015 KAIST, Daejeon, South Korea, Master of Science (카이스트 문화기술대학원, 공학석사)\n2004-2007 University of Music Franz Liszt Weimar, Germany, Pädagogisches Diplom (Master of Music in Education) in Classical Trumpet (독일 국립 리스트 음악원, 교육학 석사)\n2002-2004 University of Music Franz Liszt Weimar, Germany, Vordiplom (Pre-Diploma in Music) in Classical Trumpet (독일 국립 리스트 음악원, 음악 학사)\n2001- Korean National University of Art, Major in Trumpet (한국예술종합학교 음악원 기악과)\n\nResearch and Development:\n- Global Ph.D. Fellowship - Ministry of Education, Science and Technology (Apr. 2015 - Mar. 2018)\n- Subject: Computer-based Music Conducting\n- Chung-Ang University Hospital (Sep. 2014 - Mar. 2015) - Subject: Development of Game Analysis Model for Serious Games\n- KAIST (Apr. 2012 - Mar. 2014) - Subject: Standardization of Recording Techniques and Development of Composition/Arrangement Tools for Korean Traditional Instruments\n- Development of Korean traditional music score digitalization program and MusicXML conversion tools\n\nCourse Instructor:\n- Sungkyunkwan University, Seoul, Korea: Art Technology 1 (Mar. 2020 - Present)\n- Chung-Ang University, Seoul, Korea: 3D Video Design, Sound Programming, Physical Computing (Mar. 2016 - Present)\n\nPerformance & Exhibition Highlights:\n- Music Skyline — SIGGRAPH 2018\n- Ars Electronica - Out of the Box (TechiEon)\n- Various concerts and collaborative performances (KBS, Seoul, international venues)\n\nContact: trumpetyk09@duksung.ac.kr`;
+            } else if (p.id === 'moon') {
+              introContent = `문민혜 — 석사과정\n\n소속: 석사과정\n관심분야: 인터랙티브 미디어, 3D 비주얼, 사운드 프로그래밍\n연구주제: 미디어 아트에서의 사운드-비주얼 상호작용과 인터랙션 디자인\n학력/경력 요약: 관련 프로젝트 및 전시 다수 참여\nContact: minhyemoon@duksung.ac.kr`;
+            } else if (p.id === 'seo') {
+              introContent = `서수현 — 석사과정\n\n관심분야: 미디어 디자인, 사용자 경험\n연구주제: 인터랙션 디자인 기반 프로젝트\nContact: watermu@duksung.ac.kr`;
+            } else if (p.id === 'shim') {
+              introContent = '심보광 — 박사과정\n\n(자기소개 내용)';
+            } else {
+              introContent = p.name + '\n\n(자기소개 내용 없음)';
+            }
           } else if (b.label === '연구업적'){
             if (p.id === 'shim') window.open('https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002914157','_blank');
             else if (p.id === 'boti') window.open('https://www.earticle.net/Article/A474319','_blank');
             else window.open('#','_blank');
           } else if (b.label === 'Google Scholar'){
             if (p.id === 'seo') window.open('https://scholar.google.com/citations?hl=ko&user=FsV6clgAAAAJ','_blank');
+            else if (p.id === 'prof') window.open('https://scholar.google.com/citations?hl=ko&user=Abd4YukAAAAJ&view_op=list_works','_blank');
             else window.open('#','_blank');
           } else if (b.label === 'YouTube'){
-            window.open('#','_blank');
+            if (p.id === 'prof') window.open('https://www.youtube.com/@Professor_Bravissimo_Parlalote/shorts','_blank');
+            else window.open('#','_blank');
           }
         }
       }
