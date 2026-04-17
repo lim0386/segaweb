@@ -27,8 +27,37 @@ function preload(){
   }
 }
 
+let menus = ['EXPERIENCE', 'GALLERY', 'EDUCATION'];
+let nodes = [];
+let mic; // p5.AudioIn
+let micLevel = 0;
+let wavePoints = []; // store wave y-values per x-step for collision
+const WAVE_STEP = 10;
+const GRAVITY = 0.25;
+
+// UI data
+let images = {};
+let profiles = [];
+let cardW = 420;
+let cardH = 140;
+let padding = 24;
+
+// interaction state
+let hoverIndex = -1;
+// visibleButtons[id] = { expiry: ms, alpha: 0 }
+let visibleButtons = {};
+let introOpen = false;
+let introContent = '';
+
+function preload(){
+  const files = { yklim: 'yklim.jpg', shim: 'bkshim.jpg', moon: 'mhmoon2.png', kim: 'yhkim.png', boti: 'boti.png', seo: 'shseo.jpg' };
+  for(let k in files){
+    images[k] = loadImage(files[k], ()=>{}, ()=>{ images[k]=null; });
+  }
+}
+
 function setup() {
-  createCanvas(windowWidth, windowHeight).parent('canvas-container');
+  createCanvas(windowWidth, windowHeight);
   mic = new p5.AudioIn();
   mic.start();
 
