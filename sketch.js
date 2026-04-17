@@ -27,37 +27,29 @@ function preload(){
   }
 }
 
-let menus = ['EXPERIENCE', 'GALLERY', 'EDUCATION'];
-let nodes = [];
-let mic; // p5.AudioIn
-let micLevel = 0;
-let wavePoints = []; // store wave y-values per x-step for collision
-const WAVE_STEP = 10;
-const GRAVITY = 0.25;
-
-// UI data
-let images = {};
-let profiles = [];
-let cardW = 420;
-let cardH = 140;
-let padding = 24;
-
-// interaction state
-let hoverIndex = -1;
-// visibleButtons[id] = { expiry: ms, alpha: 0 }
-let visibleButtons = {};
-let introOpen = false;
-let introContent = '';
-
-function preload(){
-  const files = { yklim: 'yklim.jpg', shim: 'bkshim.jpg', moon: 'mhmoon2.png', kim: 'yhkim.png', boti: 'boti.png', seo: 'shseo.jpg' };
-  for(let k in files){
-    images[k] = loadImage(files[k], ()=>{}, ()=>{ images[k]=null; });
+// draw an image clipped to a circle of given size at (x,y)
+function drawCircularImage(img, x, y, size){
+  push();
+  // use canvas clipping so the image itself is drawn circular
+  const ctx = drawingContext;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  imageMode(CORNER);
+  if (img) image(img, x, y, size, size);
+  else {
+    noStroke(); fill(120); rect(x, y, size, size);
+    fill(255); textAlign(CENTER, CENTER); textSize(12);
+    text('No Image', x + size/2, y + size/2);
   }
+  ctx.restore();
+  pop();
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight).parent('canvas-container');
   mic = new p5.AudioIn();
   mic.start();
 
@@ -247,19 +239,14 @@ function drawCard(p, x, y, w, h){
   else fill(32,32,42, 255);
   rect(x, y, w, h, 12);
 
-  // photo area
+  // photo area (circular)
   let imgSize = (p.type==='professor')?100:90;
   let ix = x + 12; let iy = y + (h - imgSize)/2;
-  fill(48); rect(ix, iy, imgSize, imgSize, imgSize*0.2);
-  if (p.img) {
-    imageMode(CORNER);
-    image(p.img, ix, iy, imgSize, imgSize);
-  } else {
-    fill(120); textAlign(CENTER, CENTER); textSize(14);
-    text('No Image', ix + imgSize/2, iy + imgSize/2);
-  }
-  // photo border
-  noFill(); stroke(80); strokeWeight(2); rect(ix, iy, imgSize, imgSize, imgSize*0.2);
+  let cx = ix + imgSize/2; let cy = iy + imgSize/2;
+  fill(48); noStroke(); ellipse(cx, cy, imgSize, imgSize);
+  drawCircularImage(p.img, ix, iy, imgSize);
+  // photo border (circle)
+  noFill(); stroke(80); strokeWeight(2); ellipse(cx, cy, imgSize, imgSize);
   noStroke();
 
   // text
