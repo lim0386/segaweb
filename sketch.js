@@ -407,6 +407,7 @@ function mousePressed(){
           } else if (b.label === '연구업적'){
             if (p.id === 'shim') window.open('https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002914157','_blank');
             else if (p.id === 'boti') window.open('https://www.earticle.net/Article/A474319','_blank');
+            else if (p.id === 'seo') window.open('https://scholar.google.com/citations?hl=ko&user=FsV6clgAAAAJ','_blank');
             else window.open('#','_blank');
           } else if (b.label === 'Google Scholar'){
             if (p.id === 'seo') window.open('https://scholar.google.com/citations?hl=ko&user=FsV6clgAAAAJ','_blank');
