@@ -343,7 +343,7 @@ function preload(){
   for(let k in files){
     images[k] = loadImage(files[k], ()=>{}, ()=>{ images[k]=null; });
   }
-  images.contactImg = loadImage('sega_contact.jpg', ()=>{}, ()=>{ images.contactImg = null; });
+  images.contactImg = loadImage('./sega_contact.jpg', ()=>{}, ()=>{ images.contactImg = null; });
 }
 
 function setCanvasFont(weight){
