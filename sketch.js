@@ -980,7 +980,6 @@ function drawCard(p, x, y, w, h, alpha, isFocused, focusMode){
   let cx = ix + imgSize/2; let cy = iy + imgSize/2;
   fill(22, 21, 29, isFocused ? (40 * (cardAlpha / 255)) : 120); noStroke(); ellipse(cx, cy, imgSize, imgSize);
   // for specific profiles we can pass a crop region so the important area is shown
-  // 김영한은 기존 대비 20% 더 타이트하게, 얼굴 위치(약간 오른쪽/아래)에 맞춘 정사각형 크롭 사용
   tint(255, cardAlpha);
   if (p.id === 'kim' && p.img && p.img.width && p.img.height) {
     if (!p._kimCrop) {
@@ -1037,12 +1036,7 @@ function drawCard(p, x, y, w, h, alpha, isFocused, focusMode){
     const bodyY = y + 154;
     const bodyW = w - 48;
     const bodyH = h - 168;
-    setCanvasFont('regular');
-    textAlign(LEFT, TOP);
-    textSize(14);
-    textLeading(20);
-    fill(22, 21, 29, 210 * (cardAlpha / 255));
-    text(introContent, bodyX, bodyY, bodyW, bodyH);
+    drawProfessorIntroText(introContent, bodyX, bodyY, bodyW, bodyH, cardAlpha / 255);
 
     const closeSize = 28;
     const closeX = x + w - closeSize - 12;
@@ -1114,6 +1108,81 @@ function drawButtons(p, x, y, w, h, alpha){
   pop();
 }
 
+function wrapLineByWidth(line, maxWidth){
+  const words = line.split(' ');
+  const wrapped = [];
+  let current = '';
+
+  for (const word of words) {
+    const candidate = current ? current + ' ' + word : word;
+    if (current && textWidth(candidate) > maxWidth) {
+      wrapped.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+  }
+
+  if (current) wrapped.push(current);
+  return wrapped.length > 0 ? wrapped : [''];
+}
+
+function drawProfessorIntroText(content, x, y, w, h, alphaScale){
+  const headingSet = new Set([
+    'education',
+    'research and development',
+    'course instructor',
+    'performance & exhibition highlights',
+    'contact'
+  ]);
+
+  const lines = (content || '').split('\n');
+  const maxY = y + h;
+  let cursorY = y;
+
+  textAlign(LEFT, TOP);
+
+  for (const rawLine of lines) {
+    const line = rawLine || '';
+    const trimmed = line.trim();
+
+    if (trimmed.length === 0) {
+      cursorY += 10.5;
+      if (cursorY > maxY) break;
+      continue;
+    }
+
+    const normalized = trimmed.toLowerCase().replace(/\s+/g, ' ').replace(/\s*:\s*$/, '');
+    const isHeading =
+      headingSet.has(normalized) ||
+      /^education\s*:/i.test(trimmed) ||
+      /^research\s+and\s+development\s*:/i.test(trimmed) ||
+      /^course\s+instructor\s*:/i.test(trimmed) ||
+      /^performance\s*&\s*exhibition\s+highlights\s*:/i.test(trimmed) ||
+      /^contact\s*:/i.test(trimmed);
+    if (isHeading) {
+      setCanvasFont('semiBold');
+      textSize(17);
+      fill(18, 36, 88, 235 * alphaScale);
+    } else {
+      setCanvasFont('regular');
+      textSize(14);
+      fill(22, 21, 29, 210 * alphaScale);
+    }
+
+    const lineHeight = isHeading ? 23.5 : 20.5;
+    const wrapped = wrapLineByWidth(line, w);
+    for (const segment of wrapped) {
+      if (cursorY > maxY) break;
+      text(segment, x, cursorY);
+      cursorY += lineHeight;
+    }
+
+    if (isHeading) cursorY += 2.5;
+    if (cursorY > maxY) break;
+  }
+}
+
 function drawIntroPanel(){
   push();
   let W = min(680, width - 80);
@@ -1157,16 +1226,16 @@ function mousePressed(){
             introProfileId = p.id;
             visibleButtons = {};
             window.scrollTo(0, 0);
-            if (p.id === 'prof') {
-              introContent = `임양규 교수\n연구실 대표 교수\n\nEducation:\n2015-2020 Chung-Ang University, Seoul, South Korea, Ph.D. in Film and Media Studies (중앙대학교 첨단영상대학원, 영상학박사)\n2007-2015 KAIST, Daejeon, South Korea, Master of Science (카이스트 문화기술대학원, 공학석사)\n2004-2007 University of Music Franz Liszt Weimar, Germany, Pädagogisches Diplom (Master of Music in Education) in Classical Trumpet (독일 국립 리스트 음악원, 교육학 석사)\n2002-2004 University of Music Franz Liszt Weimar, Germany, Vordiplom (Pre-Diploma in Music) in Classical Trumpet (독일 국립 리스트 음악원, 음악 학사)\n2001- Korean National University of Art, Major in Trumpet (한국예술종합학교 음악원 기악과)\n\nResearch and Development:\n- Global Ph.D. Fellowship - Ministry of Education, Science and Technology (Apr. 2015 - Mar. 2018)\n- Subject: Computer-based Music Conducting\n- Chung-Ang University Hospital (Sep. 2014 - Mar. 2015) - Subject: Development of Game Analysis Model for Serious Games\n- KAIST (Apr. 2012 - Mar. 2014) - Subject: Standardization of Recording Techniques and Development of Composition/Arrangement Tools for Korean Traditional Instruments\n- Development of Korean traditional music score digitalization program and MusicXML conversion tools\n\nCourse Instructor:\n- Sungkyunkwan University, Seoul, Korea: Art Technology 1 (Mar. 2020 - Present)\n- Chung-Ang University, Seoul, Korea: 3D Video Design, Sound Programming, Physical Computing (Mar. 2016 - Present)\n\nPerformance & Exhibition Highlights:\n- Music Skyline — SIGGRAPH 2018\n- Ars Electronica - Out of the Box (TechiEon)\n- Various concerts and collaborative performances (KBS, Seoul, international venues)\n\nContact: trumpetyk09@duksung.ac.kr`;
-            } else if (p.id === 'moon') {
-              introContent = `문민혜 — 석사과정\n\n소속: 석사과정\n관심분야: 인터랙티브 미디어, 3D 비주얼, 사운드 프로그래밍\n연구주제: 미디어 아트에서의 사운드-비주얼 상호작용과 인터랙션 디자인\n학력/경력 요약: 관련 프로젝트 및 전시 다수 참여\nContact: minhyemoon@duksung.ac.kr`;
-            } else if (p.id === 'seo') {
-              introContent = `서수현 — 석사과정\n\n관심분야: 미디어 디자인, 사용자 경험\n연구주제: 인터랙션 디자인 기반 프로젝트\nContact: watermu@duksung.ac.kr`;
-            } else if (p.id === 'shim') {
-              introContent = '심보광 — 박사과정\n\n(프로필 내용)';
+            if (p.id === 'prof') {/* 임양규 */
+              introContent = `\n\nEducation:\n2015-2020 Chung-Ang University, Seoul, South Korea, Ph.D. in Film and Media Studies (중앙대학교 첨단영상대학원, 영상학박사)\n2007-2015 KAIST, Daejeon, South Korea, Master of Science (카이스트 문화기술대학원, 공학석사)\n2004-2007 University of Music Franz Liszt Weimar, Germany, Pädagogisches Diplom (Master of Music in Education) in Classical Trumpet (독일 국립 리스트 음악원, 교육학 석사)\n2002-2004 University of Music Franz Liszt Weimar, Germany, Vordiplom (Pre-Diploma in Music) in Classical Trumpet (독일 국립 리스트 음악원, 음악 학사)\n2001- Korean National University of Art, Major in Trumpet (한국예술종합학교 음악원 기악과)\n\nResearch and Development:\n- Global Ph.D. Fellowship - Ministry of Education, Science and Technology (Apr. 2015 - Mar. 2018)\n- Subject: Computer-based Music Conducting\n- Chung-Ang University Hospital (Sep. 2014 - Mar. 2015) - Subject: Development of Game Analysis Model for Serious Games\n- KAIST (Apr. 2012 - Mar. 2014) - Subject: Standardization of Recording Techniques and Development of Composition/Arrangement Tools for Korean Traditional Instruments\n- Development of Korean traditional music score digitalization program and MusicXML conversion tools\n\nCourse Instructor:\n- Sungkyunkwan University, Seoul, Korea: Art Technology 1 (Mar. 2020 - Present)\n- Chung-Ang University, Seoul, Korea: 3D Video Design, Sound Programming, Physical Computing (Mar. 2016 - Present)\n\nPerformance & Exhibition Highlights:\n- Music Skyline — SIGGRAPH 2018\n- Ars Electronica - Out of the Box (TechiEon)\n- Various concerts and collaborative performances (KBS, Seoul, international venues)\n\nContact: trumpetyk09@duksung.ac.kr`;
+            } else if (p.id === 'moon') {/* 문민혜 */
+              introContent = `\n\nICT융합공학과 석사과정\n관심분야: 인터랙티브 미디어, 3D 비주얼, 사운드 프로그래밍\n연구주제: 미디어 아트에서의 사운드-비주얼 상호작용과 인터랙션 디자인\n학력/경력 요약: 관련 프로젝트 및 전시 다수 참여\nContact: minhyemoon@duksung.ac.kr`;
+            } else if (p.id === 'seo') {/* 서수현 */
+              introContent = `\nICT융합공학과 석사과정\n관심분야: 미디어 디자인, 사용자 경험\n연구주제: 인터랙션 디자인 기반 프로젝트\nContact: watermu@duksung.ac.kr`;
+            } else if (p.id === 'shim') {/* 심보광 */
+              introContent = '\n글래스형 증강현실 내비게이션 애플리케이션에서의 GUI 연구\nA Study of GUI for GPS Application in AR Glasses';
             } else {
-              introContent = p.name + '\n\n(프로필 내용 없음)';
+              introContent = '\n' + p.name + ' (프로필 준비중)';
             }
             return;
           } else if (b.label === '연구업적'){
